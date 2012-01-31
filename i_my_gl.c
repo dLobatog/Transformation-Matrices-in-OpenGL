@@ -40,15 +40,31 @@ struct matrix_stack *current_stack = &model_view;
 // multiply current matrix with matrix b, put the result in current matrix
 // current = current * b
 void matrix_multiply(const GLdouble *b)
-{
-    for(int i=0; i<4; i++){
-        int x = i;
-        for (int j = i*4; j < (i*4)+4; j++) {
-            current_matrix[j] = current_matrix[j] * b[x];
-            x += 4;
-        }
-    }
+{           
+    GLdouble result[16];
 
+    for (i=0; i<4; i++)
+	{
+		result[i*4]   =  (current_matrix->m[i*4]   * b[0]) +
+					     (current_matrix->m[i*4+1] * b[4]) +
+					     (current_matrix->m[i*4+2] * b[8]) +
+					     (current_matrix->m[i*4+3] * b[12]) ;
+
+		result[i*4+1] =  (current_matrix->m[i*4]   * b[1]) + 
+						 (current_matrix->m[i*4+1] * b[5]) +
+						 (current_matrix->m[i*4+2] * b[9]) +
+						 (current_matrix->m[i*4+3] * b[13]) ;
+
+		result[i*4+2] =  (current_matrix->m[i*4]   * b[2]) + 
+					     (current_matrix->m[i*4+1] * b[6]) +
+						 (current_matrix->m[i*4+2] * b[10]) +
+						 (current_matrix->m[i*4+3] * b[14]) ;
+
+		result[i*4+3] =  (current_matrix->m[i*4]   * b[3]) + 
+						 (current_matrix->m[i*4+1] * b[7]) +
+						 (current_matrix->m[i*4+2] * b[11]) +
+						 (current_matrix->m[i*4+3] * b[15]) ;
+	}  
 }
 
 // calculating cross product of b and c, put the result in a
@@ -65,7 +81,7 @@ void cross_product(GLdouble *ax, GLdouble *ay, GLdouble *az,
 // normaliz vector (x, y, z)
 void normalize(GLdouble *x, GLdouble *y, GLdouble *z)
 {
-    // Calculate absolute value of length
+    // Calculate absolute value of vector length
     double length = abs(sqrt((*x * *x) + (*y * *y) + (*z * *z)));
     // Divide each of the components by length
     *x = *x/length;
@@ -90,24 +106,41 @@ void I_my_glLoadIdentity(void)
 // push current matrix onto current stack, report error if the stack is already full
 void I_my_glPushMatrix(void)
 {
-    // ...
+    int holder = current_stack->top;
+    if (holder+1 >= 16){
+        //cout << "Stack is full";
+    } else{
+        for(int i = 0; i < 16; i++){
+            current_stack->m[holder+1][i] = current_matrix[i];
+        }
+        current_stack->top += 1;
+    }
 }
 
 // pop current matrix from current stack, report error if the stack has only one matrix left
 void I_my_glPopMatrix(void)
 {
-    // ...
+    int holder = current_stack->top;
+    if (holder-1 <= 0){
+        //cout << "Stack is empty";
+    } else{
+        current_stack->top -= 1;  // Memory is not freed because that space will be taken on next push
+    }
 }
 
 // overwrite currentmatrix with m
 void I_my_glLoadMatrixf(const GLfloat *m)
 {
-    // ...
+    for(int i=0; i<16; i++){
+        current_matrix[i] = (GLdouble) m[i];
+    }
 }
 
 void I_my_glLoadMatrixd(const GLdouble *m)
 {
-    // ...
+    for(int i=0; i<16; i++){
+        current_matrix[i] = m[i];
+    }
 }
 
 void I_my_glTranslated(GLdouble x, GLdouble y, GLdouble z)
