@@ -32,9 +32,9 @@ void my_glScalef(GLfloat x, GLfloat y, GLfloat z);
 void my_gluLookAt(GLdouble eyeX, GLdouble eyeY, GLdouble eyeZ,
     GLdouble centerX, GLdouble centerY, GLdouble centerZ,
     GLdouble upX, GLdouble upY, GLdouble upZ);
-void my_glFrustum(GLdouble left, GLdouble right, 
+void my_glFrustum(GLdouble left, GLdouble right,
     GLdouble bottom, GLdouble top, GLdouble zNear, GLdouble zFar);
 void my_gluPerspective(GLdouble fovy, GLdouble aspect,
     GLdouble zNear, GLdouble zFar);
 
-    
+
